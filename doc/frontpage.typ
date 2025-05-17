@@ -44,6 +44,13 @@
       list(authors, marker: "", body-indent: 0pt), style:"italic" )
   ]
 
+  set list(
+  spacing: 0.8em,
+  body-indent: 0pt
+)
+
+
+
   pagebreak()
 
   // Table of contents
