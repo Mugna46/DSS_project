@@ -55,7 +55,7 @@ We found that 4 out of 5 samples belong to the same malware family, *FakeBank*, 
 #linebreak()
 The analyzed samples are connected to multiple remote servers, to which they transmit the collected data over HTTP connections.
 
-== Analyzed APK
+#heading(numbering: none)[Analyzed APK]
 
 During the project, we were tasked with analyzing four different variants of the *FakeBank* malware. Their SHA-256 hash values are as follows:
 #v(0.5em)
@@ -68,10 +68,12 @@ For the sake of readability, we will refer to each sample using the first four c
 
 Since the structure, behavior, Java code, and general characteristics of the four samples are largely identical (or at least very similar), we will begin by analyzing the `4aec` sample in detail. Afterwards, we will highlight the key differences found in the other three samples in comparison to this one.
 
-=== `4aec` APK
+== `4aec` APK (Static analysis)
+
+=== Detection
 #v(0.5em)
 #figure(
-  image("/img/Community score_fakebank.png", width: 80%),
+  image("/img/CommunityScore_fakebank.png", width: 80%),
   caption: [
     Community score of the sample on VirusTotal
   ], 
@@ -79,13 +81,23 @@ Since the structure, behavior, Java code, and general characteristics of the fou
 #label("community-score-fakebank")
 #v(1em)
 As we can see from @community-score-fakebank, the sample is detected by 36 out of 67 antivirus engines. This is a good starting point to understand that the sample is indeed malicious. 
+
+The engines also tell us that the sample is a trojan and that it is related to the `FakeBank` family.
+
+=== Permissions
 #v(0.5em)
 #figure(
-  image("/img/Permission_fakebank.png", width: 80%),
+  image("/img/Permission_fakebank.png", width: 50%),
   caption: [
-    Android permission used by the APK
+    Android permissions used by the APK
   ], 
 )
 #label("permission_fakebank")
 #v(1em)
-The sample requests a large number of permissions (see @permission_fakebank), which is a common characteristic of malware.
+The sample requests a large number of dangerous permissions (see @permission_fakebank red triangles). In particular free access to SMS messages, phone calls, and the ability to read the user's contacts. 
+#linebreak()
+The set of permission hints the application could sen confidential information to a remote server.
+#linebreak()
+Moreover it can write, send and read SMS messages. This could potentially allow to bypass the two-factor authentication system used by banks. 
+
+=== Manifest analysis and Receiver
