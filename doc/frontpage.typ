@@ -13,8 +13,8 @@
     paper: "a4",
     margin: 6em,
   )
-  set text(size: 12.5pt, font: "New Computer Modern")
-  show raw: set text(size: 12pt, font: "DejaVu Serif")
+  set text(size: 12pt, font: "New Computer Modern")
+  show raw: set text(size: 10pt)
 
   set par(
     justify: true,

