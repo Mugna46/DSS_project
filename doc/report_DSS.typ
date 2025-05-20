@@ -98,7 +98,7 @@ The engines also tell us that the sample is a trojan and that it is related to t
 #v(1em)
 The sample requests a large number of dangerous permissions (see @permission_fakebank red triangles). In particular free access to SMS messages, phone calls, and the ability to read the user's contacts. 
 #linebreak()
-The set of permission hints the application could sen confidential information to a remote server.
+The set of permission hints the application could send confidential information to a remote server.
 #linebreak()
 Moreover it can write, send and read SMS messages. This could potentially allow to bypass the two-factor authentication system used by banks. 
 #v(1em)
@@ -149,3 +149,98 @@ Anyway we can see, using tools like `curl` or `nslookup`, that the domain is not
 
 === Activities
 
+#pagebreak()
+
+
+
+
+= RansomLoc family
+
+*Clash Royale Private* is an Android package that appears as a simple screensaver or game app but is actually a Trojan that quietly steals data. Once installed, it hides its icon and auto‐launches at boot, then reads incoming SMS messages, harvests contacts and call logs, and even accesses files on external storage. 
+#linebreak()
+#linebreak()
+All this information is sent unencrypted to remote servers, making the app a severe threat to user privacy.
+
+== Static analysis
+
+=== Detection
+#v(0.5em)
+#figure(
+  image("/img/CommunityScore_clashprivate.jpg", width: 80%),
+  caption: [
+    Community score of the APK on VirusTotal
+  ], 
+)
+#label("community-score-clashprivate")
+#v(1em)
+As we can see from the figure @community-score-clashprivate, the APK is detected by 31 out of 66 antivirus engines. This suggests that the apk is malicious, we can also notice that it is classified as a trojan *Lock Ransomware*.
+
+=== Permissions
+#v(0.5em)
+#figure(
+  image("/img/Permission_clashprivate.png", width: 50%),
+  caption: [
+    Android permissions used by the APK
+  ], 
+)
+#label("permission_clashprivate")
+#v(1em)
+
+The malware exploits a series of sensitive Android permissions to ensure its operation and collect the user’s personal information, it requests only four dangerous permissions (red triangles in @permission_clashprivate).
+#linebreak()
+#linebreak()
+The sample requests full internet access, which it uses to exfiltrate stolen information to remote servers. By using the `RECEIVE_BOOT_COMPLETED` permission, it ensures it launches automatically when the device starts, maintaining persistence without user interaction. It also requests permissions to read and write to external storage and to read and write used to harvest names and numbers from the user’s address book, potentially aiding identity theft or malware propagation. Finally, while seemingly harmless, the `SET_WALLPAPER` permission may be exploited to distract the user or conceal malicious activity happening in the background.
+
+=== Manifest Analysis and Receivers
+#v(1em)
+#columns(2)[
+  #figure(
+  image("/img/Manifest_clashprivate.png", width: 100%),
+  gap: 5.5em,
+  caption: [
+    AndroidManifest
+  ], 
+)
+#label("manifest_clashprivate")
+#colbreak()
+ #figure(
+  image("/img/receiver_clashprivate.png", width: 100%),
+  caption: [
+    Receivers
+  ], 
+)
+#label("receivers_clashprivate")
+]
+#v(1em)
+
+In the `AndroidManifest.xml` the presence of the `RECEIVE_BOOT_COMPLETED` permission and the declaration of the receiver:
+#v(0.5em)
+```xml
+<receiver android:name="com.ins.screensaver.receivers.OnBoot" android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
+```
+#v(0.5em)
+indicate the malware’s intention to execute automatically when the device restarts. 
+Indeed the `<receiver>` element includes an intent filter that intercepts both the system action:
+#v(0.5em)
+```xml
+<intent-filter>
+    <action android:name="android.intent.action.BOOT_COMPLETED" />
+    <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+</intent-filter>
+```
+#v(0.5em)
+In this way, as soon as Android finishes its startup, the framework sends the corresponding intent and triggers the `onReceive()` method of `OnBoot.java` file (see @receivers_clashprivate).
+#linebreak()
+#linebreak()
+Below we can see the code of `OnBoot.java`, when the boot occurs the receiver creates an explicit intent targeting the LockActivity class and sets the flag `FLAG_ACTIVITY_NEW_TASK` (268 435 456) to start an user activity. Since there are no additional checks or validations on the incoming intent’s contents, every device restart causes LockActivity to be launched in the background acting as a fake lock screen.
+#v(0.5em)
+```java
+public class OnBoot extends BroadcastReceiver {
+    @Override // android.content.BroadcastReceiver
+    public void onReceive(Context context, Intent intent) {
+        context.startActivity(new Intent(context, (Class<?>) LockActivity.class).setFlags(268435456));
+    }
+}
+```
+#v(0.5em)
+In this manner on one hand, the malware ensures its persistence: even if the user tries to uninstall the app or reboot the device, on the next power‐on the receiver guarantees that LockActivity is immediately launched; on the other hand, simply running LockActivity from the start allows the malware to hide its malicious operations.
