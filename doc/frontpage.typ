@@ -14,7 +14,7 @@
     margin: 6em,
   )
   set text(size: 12pt, font: "New Computer Modern")
-  show raw: set text(size: 10pt)
+  show raw: set text(size: 9pt)
 
   set par(
     justify: true,

