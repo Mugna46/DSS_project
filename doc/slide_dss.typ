@@ -1,0 +1,66 @@
+#import "@preview/touying:0.5.5": *
+#import themes.university: * // https://touying-typ.github.io/docs/themes/university/
+
+#import "@preview/cetz:0.3.2"
+
+#let vimg(body) = {
+    rect(width: 10mm, height: 5mm)[
+        #text(body)
+    ]
+}
+
+#show: university-theme.with(
+  aspect-ratio: "16-9",
+  config-info(
+    title: [
+      #figure(
+        image("marchio_unipi_black.svg", width: 40%),
+      )
+      ],
+    subtitle: [Dependability and Secure System 2025],
+    author: ([Andrea Mugnai], [], [Jacopo Tucci], []),
+    institution: [University of Pisa],
+  ),
+  config-common(handout: false),
+  footer-a: [A.M. J.T.]
+)
+
+#title-slide(logo: image("marchio_unipi_black.svg", width: 12%))
+
+= Introduction
+
+#slide[
+  #v(1em)
+  #figure(
+    grid(
+        columns: 2,     // 2 means 2 auto-sized columns
+        gutter: 15mm,    // space between columns
+        image("/img/mobsf_logo.png", width: 80%),
+        image("/img/VirusTotal_logo.png", width: 100%),
+    ),
+)
+#set align(center)
+Starting from VirusTotal analysis and integrating it with MobSF we classified our samples as:
+#v(0.3em)
+- *FakeBank* (4 samples)
+- *Locker* (1 sample)
+We performed both *Static* and *Dynamic* Analisys
+]
+
+= Fakebank Family
+
+#slide[
+  #figure(
+    grid(
+        columns: 2,     // 2 means 2 auto-sized columns
+        gutter: 0.5mm,    // space between columns
+        image("/img/ibk_icon.png", width: 30%),
+        image("/img/ibk_icon.png", width: 30%),
+        image("/img/example_icon.png", width: 30%),
+        image("/img/xinhan_icon.png", width: 30%),
+    ),
+)
+#v(1em)
+#set align(center)
+The four analyzed *Malware* samples are *Trojan bankers* designed to mimic legitimate banking apps. In reality, they steal sensitive user information such as phone numbers and banking credentials. Additionally, they intercept all incoming SMS messages to capture one-time passwords `(OTPs)` sent by the bank.
+]
