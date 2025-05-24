@@ -53,7 +53,7 @@ We performed both *Static* and *Dynamic* Analisys
   #figure(
     grid(
         columns: 2,     // 2 means 2 auto-sized columns
-        gutter: 0.5mm,    // space between columns
+        gutter: 5mm,    // space between columns
         image("/img/ibk_icon.png", width: 30%),
         image("/img/ibk_icon.png", width: 30%),
         image("/img/example_icon.png", width: 30%),
@@ -64,3 +64,25 @@ We performed both *Static* and *Dynamic* Analisys
 #set align(center)
 The four analyzed *Malware* samples are *Trojan bankers* designed to mimic legitimate banking apps. In reality, they steal sensitive user information such as phone numbers and banking credentials. Additionally, they intercept all incoming SMS messages to capture one-time passwords `(OTPs)` sent by the bank.
 ]
+
+== Permissions
+#slide[
+  #figure(
+    grid(
+        columns: 2,     // 2 means 2 auto-sized columns
+        gutter: 5mm,   // space between columns
+        image("/img/Permission_fakebank.png", width: 85%),
+        grid(
+        columns: 1,     // 1 means 1 auto-sized column
+        rows: 2,     // 2 means 2 auto-sized rows
+        rect(stroke: none)[
+            #set align(left)
+            #set text(size: 20pt)
+            The most dangerous permission used by the Malware are the ones releated to manage SMS and Phone calls. In association with the #strong[Broadcasting] permission and setting the app with the highest priority (*1000*), it is able to intercept all the SMS messages and phone calls.
+        ],
+        image("/img/Manifest_fakebank.png", width: 120%, height: 50%, fit: "contain"),
+        ),
+      ),
+  )
+]
+        

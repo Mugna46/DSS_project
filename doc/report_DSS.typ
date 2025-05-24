@@ -125,7 +125,7 @@ Moreover it can write, send and read SMS messages. This could potentially allow 
 ]
 #v(1em)
 The manifest shows that a *Broadcast Receiver* is not protected (see @manifest) the Malware intercept
-all the SMS and leak in this case the OTP codes used by the banks. 
+all the SMS and leak in this case the OTP codes used by the banks. Additionaly setting the priority to `1000` (the maximum value) ensures that the malware is executed before any other application that might also be listening for the same intent.
 
 
 The *Broadcast Receiver* is implemented in the package `com.example.kbtest.smsReceiver` (see @receivers).
