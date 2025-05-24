@@ -14,7 +14,7 @@
   config-info(
     title: [
       #figure(
-        image("marchio_unipi_black.svg", width: 40%),
+        image("/img/marchio_unipi_black.svg", width: 40%),
       )
       ],
     subtitle: [Dependability and Secure System 2025],
@@ -25,7 +25,7 @@
   footer-a: [A.M. J.T.]
 )
 
-#title-slide(logo: image("marchio_unipi_black.svg", width: 12%))
+#title-slide(logo: image("/img/marchio_unipi_black.svg", width: 12%))
 
 = Introduction
 
