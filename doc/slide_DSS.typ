@@ -78,11 +78,21 @@ The four analyzed *Malware* samples are *Trojan bankers* designed to mimic legit
         rect(stroke: none)[
             #set align(left)
             #set text(size: 20pt)
-            The most dangerous permission used by the Malware are the ones releated to manage SMS and Phone calls. In association with the #strong[Broadcasting] permission and setting the app with the highest priority (*1000*), it is able to intercept all the SMS messages and phone calls.
+            The most dangerous permissions used by the malware are those related to managing SMS messages and phone calls. Combined with the #strong[broadcasting] permission and by assigning the app the highest priority (*1000*), the malware is able to intercept all incoming SMS messages and phone calls.
         ],
         image("/img/Manifest_fakebank.png", width: 120%, height: 50%, fit: "contain"),
         ),
       ),
   )
+]
+== App Flow
+#slide[
+  #v(1em)
+  #figure(
+    image("/img/diagram_fakebank.drawio.png")
+  )
+  #set text(size: 20pt)
+  #set align(center)
+  `BankSplashActivity` and `BankEndActivity` sends all the stolen data to a remote server that is not the legitimate one. (`http://banking1.kakatt.net:9998`) 
 ]
         

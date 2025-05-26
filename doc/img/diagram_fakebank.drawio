@@ -1,0 +1,89 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (X11; Linux x86_64; rv:128.0) Gecko/20100101 Firefox/128.0" version="27.0.9">
+  <diagram name="Page-1" id="up-rJsbCAJt8GNneFF_9">
+    <mxGraphModel dx="792" dy="423" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="PqdLR431ClCtl6Tt4zcf-8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="PqdLR431ClCtl6Tt4zcf-1" target="PqdLR431ClCtl6Tt4zcf-7">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="PqdLR431ClCtl6Tt4zcf-1" value="BankSplashNext" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="213.75" y="100" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="PqdLR431ClCtl6Tt4zcf-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="PqdLR431ClCtl6Tt4zcf-29" target="PqdLR431ClCtl6Tt4zcf-1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="85" y="120" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="PqdLR431ClCtl6Tt4zcf-35" value="After 3 s" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="PqdLR431ClCtl6Tt4zcf-4">
+          <mxGeometry x="0.3408" y="1" relative="1" as="geometry">
+            <mxPoint x="5" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="PqdLR431ClCtl6Tt4zcf-33" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="PqdLR431ClCtl6Tt4zcf-2" target="PqdLR431ClCtl6Tt4zcf-29">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="PqdLR431ClCtl6Tt4zcf-34" value="Click on the app" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="PqdLR431ClCtl6Tt4zcf-33">
+          <mxGeometry x="-0.1511" relative="1" as="geometry">
+            <mxPoint y="2" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="PqdLR431ClCtl6Tt4zcf-2" value="Android User" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" vertex="1" parent="1">
+          <mxGeometry x="65" y="220" width="40" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="PqdLR431ClCtl6Tt4zcf-13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="PqdLR431ClCtl6Tt4zcf-7" target="PqdLR431ClCtl6Tt4zcf-11">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="PqdLR431ClCtl6Tt4zcf-7" value="BankPreActivity" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="360" y="100" width="110" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="PqdLR431ClCtl6Tt4zcf-15" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="PqdLR431ClCtl6Tt4zcf-11" target="PqdLR431ClCtl6Tt4zcf-14">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="PqdLR431ClCtl6Tt4zcf-11" value="BankActivity" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="520" y="100" width="110" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="PqdLR431ClCtl6Tt4zcf-17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="PqdLR431ClCtl6Tt4zcf-14" target="PqdLR431ClCtl6Tt4zcf-16">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="PqdLR431ClCtl6Tt4zcf-14" value="User insert Resident Number and Bank ID" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="523.75" y="170" width="102.5" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="PqdLR431ClCtl6Tt4zcf-20" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="PqdLR431ClCtl6Tt4zcf-16" target="PqdLR431ClCtl6Tt4zcf-19">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="PqdLR431ClCtl6Tt4zcf-16" value="BankNumActivity" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="360" y="180" width="110" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="PqdLR431ClCtl6Tt4zcf-22" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="PqdLR431ClCtl6Tt4zcf-19" target="PqdLR431ClCtl6Tt4zcf-21">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="PqdLR431ClCtl6Tt4zcf-19" value="&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; User insert&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; Account Number and Password " style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="213.75" y="170" width="102.5" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="PqdLR431ClCtl6Tt4zcf-26" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1" source="PqdLR431ClCtl6Tt4zcf-21" target="PqdLR431ClCtl6Tt4zcf-25">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="PqdLR431ClCtl6Tt4zcf-21" value="BankScardActivity" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="210" y="260" width="110" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="PqdLR431ClCtl6Tt4zcf-27" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="PqdLR431ClCtl6Tt4zcf-25" target="PqdLR431ClCtl6Tt4zcf-28">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="520" y="279.8275862068966" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="PqdLR431ClCtl6Tt4zcf-25" value="User insert the OTP received" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="363.75" y="250" width="102.5" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="PqdLR431ClCtl6Tt4zcf-28" value="BankEndActivity" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="520" y="250" width="110" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="PqdLR431ClCtl6Tt4zcf-29" value="BankSplashActivity" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="30" y="90" width="110" height="60" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
