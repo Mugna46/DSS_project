@@ -69,7 +69,7 @@ For the sake of readability, we will refer to each sample using the first four c
 
 Since the structure, behavior, Java code, and general characteristics of the four samples are largely identical (or at least very similar), we will begin by analyzing the `4aec` sample in detail. Afterwards, we will highlight the key differences found in the other three samples in comparison to this one.
 
-== `4aec` APK (Static analysis)
+== Static analysis (`4aec` APK)
 
 #label("4aec-apk-static-analysis")
 
@@ -278,7 +278,13 @@ Then it sends all the information to a *remote server* (`http://banking1.kakatt.
 
 #pagebreak()
 
-== 1911 APK (Static analysis)
+== Dynamic analysis (`4aec` APK)
+
+
+
+#pagebreak()
+
+== Static analysis (`1911` APK)
 
 This sample appears to differ from the others in its family. The source code reveals additional packages and classes that do not seem to be used.
 In this section, we will examine these differences and explore the extra features included in the sample.
@@ -584,7 +590,8 @@ if (done.isEmpty()) {
 }
 ```
 #v(0.5em)
-The method then starts a thread responsible for retrieving the encryption key from the C&C server and encrypting files and contacts based on that key, as shown by the code below:
+#pagebreak()
+The method then starts a thread responsible for retrieving the encryption key from the C&C#footnote[Command-and-control server] server and encrypting files and contacts based on that key, as shown by the code below:
 #v(0.5em)
 ```java
     ...
@@ -733,3 +740,36 @@ This function, in turn, calls another function present in the file `Utils.java`:
     }
 ```
 This code creates an intent directed to the Android Home screen (launching the default launcher) and executes it immediately. The user therefore cannot move LockActivity into split-screen mode: as soon as Android positions the app in a reduced area, the control thread brings it back to the foreground or even to the launcher, forcing the user to remain “locked” in LockActivity at full-screen.
+
+== Dynamic Analysis
+
+The dynamic analysis was conducted on an Android 9.0 emulator (Pixel XL, API 28) in `Android Studio`, with `MobSF` running to capture network traffic, system logs, and screenshots. As soon as the APK is installed and launched, its icon automatically disappears. On first run, `MobSF` records requests for storage and contacts permissions (needed for encrypting files and contacts), but every attempt to connect to the C&C server times out: the server is offline and does not return an encryption key. Consequently, the encryption process is halted and the app remains idle, unable to proceed.
+#v(1.5em)
+#figure(
+  image("img/walpaper_clashprivate.jpg", width: 40%),
+  caption: [
+    New wallpaper set by malware
+  ], 
+)
+#label("wallpaper_clashprivate")
+#v(1.5em)
+Nevertheless, the `LockActivity` code still sets the new wallpaper (@wallpaper_clashprivate) and displays a screen containing a “Pay” button on which is written “ПРОВЕРИТЬ ОПЛАТУ И РАЗБЛОКИРОВАТЬ” → “Verify payment and unlock”. Every tap on this button triggers a Russian toast, “Оплата не поступила” (“Payment not received”), as coded (@webView_clashprivate and @webView_clashprivatemsg). Finally, it was confirmed that the continuous check on `isInMultiWindowMode()` functions correctly: whenever the user attempts to enter split‐screen, the thread repeatedly calls `Utils.pressHome(this)`, immediately returning the app to full‐screen. In summary, with the C&C server offline the app remains stuck in `LockActivity` (unable to encrypt or decrypt), but all persistence and multi‐window defenses remain active, preventing the user from leaving the fake interface.
+#v(1.5em)
+#columns(2)[
+  #figure(
+  image("img/WebViewclashprivate.jpg", width: 80%),
+  caption: [
+    Main web view
+  ], 
+)
+#label("webView_clashprivate")
+#colbreak()
+ #figure(
+  image("img/webView_clashprivatemsg.jpg", width: 80%),
+  caption: [
+    Web view message
+  ], 
+)
+#label("webView_clashprivatemsg")
+]
+#v(1.5em)
