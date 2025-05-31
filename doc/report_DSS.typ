@@ -37,16 +37,16 @@ During this project, we used three main analysis tools to identity the malicious
 samples:
 #v(0.5em)
 - *VirusTotal* (Antimalware Analysis)
-  - It's a web tool that allows to submit samples and analyze them     with several antivirus or antimalware programs 
+  - It's a web tool that allows to submit samples and analyze them with several antivirus or antimalware programs.
   - This tool was used to gain a starting insight on the already existing knowledge about the specific malicious sample.
 - *MobSF* (Static and Dynamic analysis)
-   - This tool let the analyst to automatically highlight interesting features of the application (e.g. Android permissions, API calls, remote URLs), but also to extract the Java code from the APK file. In this way we can gain a strong insight of the potential malicious behavior of the application and then manually analyze it by examining the code.
-  - Moreover, it allows to perform a dynamic analysis, by executing    the application inside a virtual environment and by monitoring it.
+   - This tool let the analyst to automatically highlight interesting features of the application (e.g. Android permissions, API calls, remote URLs), but also to extract the Java code from the APK file. In this way we can gain a strong insight of the potential malicious behavior of the application and then manually analyze it by viewing the code.
+  - Moreover, it allows to perform a dynamic analysis, by executing simulating the application (`Android Studio`) inside a virtual environment.
 - *JD-GUI* (Java Decompilation)
   - This tool allows to decompile the Java code extracted from the APK file and to analyze it in a more user-friendly way.
   - It is useful to understand the logic behind the code and to identify potential malicious behavior.
 #linebreak()
-We found that 4 out of 5 samples belong to the same malware family, *FakeBank*, which consists of `trojans` designed to steal sensitive banking and SMS information. The remaining sample is a `ransomware` disguised under the name of the popular game _Clash Royale_.
+We found that 4 out of 5 samples belong to the same malware family, *FakeBank*, which consists of `trojans` designed to steal sensitive banking and SMS information. The remaining sample is a `locker` disguised under the name of the popular game _Clash Royale_.
 #pagebreak()
 = FakeBank family
 
@@ -78,7 +78,7 @@ Since the structure, behavior, Java code, and general characteristics of the fou
 #figure(
   image("/img/CommunityScore_fakebank.png", width: 80%),
   caption: [
-    Community score of the sample on VirusTotal
+     VirusTotal Detection
   ], 
 )
 #label("community-score-fakebank")
@@ -99,7 +99,7 @@ The engines also tell us that the sample is a trojan and that it is related to t
 #v(1em)
 The sample requests a large number of dangerous permissions (see @permission_fakebank red triangles). In particular free access to SMS messages, phone calls, and the ability to read the user's contacts. 
 #linebreak()
-The set of permission hints the application could send confidential information to a remote server.
+The set of permission hints that the application could send confidential information to a remote server.
 #linebreak()
 Moreover it can write, send and read SMS messages. This could potentially allow to bypass the two-factor authentication system used by banks. 
 #v(1em)
@@ -124,8 +124,7 @@ Moreover it can write, send and read SMS messages. This could potentially allow 
 #label("receivers")
 ]
 #v(1em)
-The manifest shows that a *Broadcast Receiver* is not protected (see @manifest) the Malware intercept
-all the SMS and leak in this case the OTP codes used by the banks. Additionaly setting the priority to `1000` (the maximum value) ensures that the malware is executed before any other application that might also be listening for the same intent.
+The manifest file shows that a Broadcast Receiver is not properly protected (see @manifest). Due to this vulnerability, malware can intercept all incoming SMS messages, including OTP codes used, for example, in banking authentication, thereby compromising user security. Additionaly setting the priority to `1000` (the maximum value) ensures that the malware is executed before any other application that might also be listening for the similar intent.
 
 
 The *Broadcast Receiver* is implemented in the package `com.example.kbtest.smsReceiver` (see @receivers).
@@ -165,7 +164,7 @@ As we can see in @activities_fakebank, the Malware performs different activities
 *BankSplashActivity*
 #linebreak()
 #v(0.5em)
-The activity is a fake splash screen that is shown to the user when the application is launched, in seconds it collect:
+The activity is a fake splash screen that is shown to the user when the application is launched, then it collects:
 #v(0.5em)
 - Subscriber ID (IMSI)
 - Phone number
@@ -212,7 +211,7 @@ This activity just create a new splash screen and then starts the `BankPreActivi
 *BankPreActivity*
 #linebreak()
 #v(0.5em)
-This is again a fake splash screen with different buttons it belongs to the chain of activities that the malware uses to hide its malicious behavior. Effectively only the `nect` button is implemented leading to the next activity.
+This is again a fake splash screen with different buttons. It belongs to the chain of activities that the malware uses to hide its malicious behavior. Effectively only the `Next` button is implemented leading to the next activity.
 
 #v(0.5em)
 #linebreak()
@@ -280,7 +279,7 @@ Then it sends all the information to a *remote server* (`http://banking1.kakatt.
 
 == Dynamic analysis (`4aec` APK)
 
-The dynamic analysis was conducted on an Android 9.0 emulator (Pixel XL, API 28) in `Android Studio`, with `MobSF` running to capture network traffic, system logs, and screenshots. Upon installation and first launch, the application immediately begins its malicious activity sequence as identified during static analysis. The malware successfully executes the complete chain of activities starting from `BankSplashActivity()` (@bankSplashActivity), which displays for 3 seconds while silently collecting device information including IMSI, phone number, and SIM serial number.
+The dynamic analysis was conducted on an Android 9.0 emulator (Pixel XL, API 28) in `Android Studio`, with `MobSF` running to capture network traffic, system logs, and screenshots. Upon installation and first launch, the application immediately begins its malicious activity as identified during static analysis. The malware successfully executes the complete chain of activities starting from `BankSplashActivity` (@bankSplashActivity), which displays for 3 seconds while silently collecting device information including IMSI, phone number, and SIM serial number.
 #linebreak()
 #v(1.5em)
 #columns(2)[
@@ -326,7 +325,7 @@ Once the user taps “Next”, the application enters `BankActivity`, the first 
 If the checks pass, the app stores these values into `BankInfo.bankinid` and `BankInfo.jumin` before immediately launching `BankNumActivity` in which the victim is prompted to enter their bank account number and associated password (@bankNumActivity).
 #linebreak()
 #linebreak()
-After the user submits that form, the app advances to `BankScardActivity` (@bankScardActivity), again preserving the three‐second delay pattern to maintain the illusion of legitimate processing time. Whitin tihs activity, the user is asked to input full payment card information, card number, expiration date, CVV, and any security PIN. Once these fields are completed, the code stores them and then immediately transitions into the final phase, BankEndActivity (@bankEndActivity).
+After the user submits that form, the app advances to `BankScardActivity` (@bankScardActivity), again preserving the three‐second delay pattern to maintain the illusion of legitimate processing time. Whitin this activity, the user is asked to input full payment card information, card number, expiration date, CVV, and any security PIN. Once these fields are completed, the code stores them and then immediately transitions into the final phase, `BankEndActivity` (@bankEndActivity).
 In this phase, the malware bundles all previously collected information into a single HTTP POST request to http://banking1.kakatt.net:9998/send_bank.php.
 
 The dynamic analysis confirmed that while the data exfiltration functionality is currently non-functional due to the offline infrastructure, the malware's core capabilities remain intact. The SMS interception mechanism successfully captures test messages, and the application properly collects all device identifiers and user inputs as designed. The persistence mechanisms also function correctly, with the broadcast receiver maintaining its high-priority position throughout the analysis session.
@@ -383,7 +382,7 @@ In this section, we will examine these differences and explore the extra feature
     └── smsReceiver.java
 ```
 
-As we can see from the tree structure above, The `APK` contains several additional packeges and classes compared to the previous samples. 
+As we can see from the tree structure above, The `APK` contains several additional packages and classes compared to the previous samples. 
 
 In particular `MainActivity.java` into the `smsmanager` package add some noticeable malware features:
 #v(0.5em)
@@ -444,7 +443,7 @@ public void removeApplications() {
 ```
 Removing also the installed applications if existent.
 #v(0.5em)
-- Send sensitive information like the phone number, IMSI, and SIM serial number to a remote server. (like the previous sample @4aec-apk-static-analysis) 
+- Send sensitive information like the phone number, IMSI, and SIM serial number to a remote server just like the previous sample (@4aec-apk-static-analysis) 
 #v(1em)
 Anyway as we can se from the manifest:
 ```xml
@@ -463,7 +462,7 @@ Anyway as we can se from the manifest:
 </receiver>
 ```
 #v(0.5em)
-The `MainActivity` is not the starting point of the application. The real main activity is `BankSplashActivity`, that following the flow end his execution in `BankEndActivity` not passing in any way from the `MainActivity`. Also the Broadcast Receiver is not the one of the `MainActivity` but the one of the `smsReceiver` package.
+The `MainActivity` is not the actual entry point of the application. The real main activity is `BankSplashActivity`, which, following the application's execution flow, ends in `BankEndActivity` without ever passing through `MainActivity`. Additionally, the _Broadcast Receiver_ functionalities does not belong to `MainActivity`, but rather to the `smsReceiver` package.
 #pagebreak()
 
 
@@ -499,31 +498,28 @@ As we can see from the figure @community-score-clashprivate, the APK is detected
 #label("permission_clashprivate")
 #v(1em)
 
-The malware exploits a series of sensitive Android permissions to ensure its operation and collect the user’s personal information, it requests only four dangerous permissions (red triangles in @permission_clashprivate).
+The malware exploits a series of sensitive Android permissions to ensure its operation and collect the user’s personal information, it requests four dangerous permissions (red triangles in @permission_clashprivate).
 #linebreak()
 #linebreak()
-The sample requests full internet access, which it uses to exfiltrate stolen information to remote servers. By using the `RECEIVE_BOOT_COMPLETED` permission, it ensures it launches automatically when the device starts, maintaining persistence without user interaction. It also requests permissions to read and write to external storage and to read and write used to harvest names and numbers from the user’s address book, potentially aiding identity theft or malware propagation. Finally, while seemingly harmless, the `SET_WALLPAPER` permission may be exploited to distract the user or conceal malicious activity happening in the background.
+The sample requests full internet access, which it uses to exfiltrate stolen information to remote servers. By using the `RECEIVE_BOOT_COMPLETED` permission, it ensures it launches automatically when the device starts, maintaining persistence without user interaction. It also requests permissions to read and write to external storage and to read and write used to harvest names and numbers from the user’s address book, potentially hiding identity theft or malware propagation. Finally, while seemingly harmless, the `SET_WALLPAPER` permission may be exploited to distract the user or conceal malicious activity happening in the background.
 
 === Manifest Analysis and Receivers
-#v(1em)
-#columns(2)[
-  #figure(
-  image("/img/Manifest_clashprivate.png", width: 100%),
-  gap: 5.5em,
+#v(0.5em)
+#figure(
+  image("/img/Manifest_clashprivate.png", width: 110%),
   caption: [
     AndroidManifest
   ], 
 )
 #label("manifest_clashprivate")
-#colbreak()
+#v(1em)
  #figure(
-  image("/img/receiver_clashprivate.png", width: 100%),
+  image("/img/receiver_clashprivate.png", width: 60%),
   caption: [
     Receivers
   ], 
 )
 #label("receivers_clashprivate")
-]
 #v(1em)
 
 In the `AndroidManifest.xml` the presence of the `RECEIVE_BOOT_COMPLETED` permission and the declaration of the receiver:
@@ -545,7 +541,7 @@ Indeed the `<receiver>` element includes an intent filter that intercepts both t
 In this way, as soon as Android finishes its startup or its reboot, the framework sends the corresponding intent and triggers the `onReceive()` method of `OnBoot.java` file (see @receivers_clashprivate).
 #linebreak()
 #linebreak()
-Below we can see the code of `OnBoot.java`, when the boot occurs the receiver creates an explicit intent targeting the LockActivity class and sets the flag `FLAG_ACTIVITY_NEW_TASK` (268 435 456) to start an user activity. Since there are no additional checks or validations on the incoming intent’s contents, every device restart causes LockActivity to be launched in the background acting as a fake lock screen.
+Below we can see the code of `OnBoot.java`, when the boot occurs the receiver creates an explicit intent targeting the `LockActivity` class and sets the flag `FLAG_ACTIVITY_NEW_TASK` (268 435 456) to start an user activity. Since there are no additional checks or validations on the incoming intent’s contents, every device restart causes `LockActivity` to be launched in the background acting as a fake lock screen.
 #v(0.5em)
 ```java
 public class OnBoot extends BroadcastReceiver {
@@ -556,7 +552,7 @@ public class OnBoot extends BroadcastReceiver {
 }
 ```
 #v(0.5em)
-In this manner on one hand, the malware ensures its persistence: even if the user tries to uninstall the app or reboot the device, on the next power‐on the receiver guarantees that LockActivity is immediately launched; on the other hand, simply running LockActivity from the start allows the malware to hide its malicious operations.
+In this manner on one hand, the malware ensures its persistence: even if the user tries to uninstall the app or reboot the device, on the next power‐on the receiver guarantees that `LockActivity` is immediately launched. `LockActivity` also allow the malware to hide its malicious operations.
 
 === Activities
 
@@ -575,6 +571,7 @@ Within the malware, there are two main activities: `com.ins.screensaver.MainActi
   #v(2em)
   #figure(
   [
+    #set text(size: 11pt)
     Despite this, VirusTotal lists only a single main activity, namely LockActivity. This is because MainActivity is responsible solely for hiding the app’s icon and immediately redirecting execution to the other activity.
   ], 
 )
@@ -658,7 +655,6 @@ if (done.isEmpty()) {
 }
 ```
 #v(0.5em)
-#pagebreak()
 The method then starts a thread responsible for retrieving the encryption key from the C&C#footnote[Command-and-control server] server and encrypting files and contacts based on that key, as shown by the code below:
 #v(0.5em)
 ```java
@@ -692,7 +688,7 @@ private void showMessage(final WebView webView, final Resources resources) {
 ```
 #v(0.5em)
 Once received, these values are loaded into the WebView.
-#v(0.5em)
+#linebreak()
 ```java
 public void run() {
             String newContent = resources.getString(R.string.message);
@@ -719,7 +715,7 @@ public void run() {
 In the code above, this thread reconstructs the phone’s UID, sends another GET request to `http://timei2260.myjino.ru/gateway/check.php?uid=<UID>`, and awaits the server’s response.
 #linebreak()
 #linebreak()
-If the server returns a string whose first part is not `true`, it means the payment has not yet been received; in this case, the app quickly shows a Toast with the Russian message “Оплата не поступила” (“Payment not received”), awaiting another user attempt:
+If the server returns a string whose first part is not `true`, it means the payment has not yet been received; in this case, the app quickly shows a Toast with the Russian message _“Оплата не поступила” (“Payment not received”)_, awaiting another user attempt:
 #v(0.5em)
 ```java
 if (!response.split("\\|")[0].equalsIgnoreCase("true")) {
@@ -756,7 +752,7 @@ new Thread(new Runnable() {
 }).start();
 ```
 #v(0.5em)
-Finally, once the decryption threads are started, LockActivity shows a confirmation Toast (in Russian: “Вы успешно сняли блокировку с телефона!” – “You have successfully removed the lock from your phone!”) and calls `finish()` o close its interface, as seen in the code below. From that moment on, the user can freely use the device again.
+Finally, once the decryption threads are started, LockActivity shows a confirmation Toast (in Russian: _“Вы успешно сняли блокировку с телефона!” – “You have successfully removed the lock from your phone!”_) and calls `finish()` o close its interface, as seen in the code below. From that moment on, the user can freely use the device again.
 #v(0.5em)
 ```java
 Toast.makeText(
@@ -781,14 +777,16 @@ public class AES {
         SecretKeySpec skeySpec = new SecretKeySpec(key, "AES");
         Cipher cipher = Cipher.getInstance("AES");
 ```
-#v(1em)
+#v(0.5  em)
 In addition to the encryption and ransom-display logic, LockActivity includes a function that prevents the user from exploiting Android’s multi-window mode to “escape” the malicious screen. In Android versions that support Multi-Window Mode, a background thread continuously checks whether the activity has entered split-screen mode.
+#v(0.5em)
 ```java
 if (Build.VERSION.SDK_INT >= 24) {
   LockActivity.this.multiWindowCheck();
 }
 ```
 If it detects this, the following function is executed:
+#v(0.5em)
 ```java
     public void multiWindowCheck() {
         while (true) {
@@ -809,6 +807,7 @@ This function, in turn, calls another function present in the file `Utils.java`:
 ```
 This code creates an intent directed to the Android Home screen (launching the default launcher) and executes it immediately. The user therefore cannot move LockActivity into split-screen mode: as soon as Android positions the app in a reduced area, the control thread brings it back to the foreground or even to the launcher, forcing the user to remain “locked” in LockActivity at full-screen.
 
+#pagebreak()
 == Dynamic Analysis
 
 The dynamic analysis was conducted also in this case on an Android 9.0 emulator (Pixel XL, API 28) in `Android Studio`, with `MobSF`. As soon as the APK is installed and launched, its icon automatically disappears. On first run, `MobSF` records requests for storage and contacts permissions (needed for encrypting files and contacts), but every attempt to connect to the C&C server times out: the server is offline and does not return an encryption key. Consequently, the encryption process is halted and the app remains idle, unable to proceed.
@@ -820,25 +819,24 @@ The dynamic analysis was conducted also in this case on an Android 9.0 emulator 
   ], 
 )
 #label("wallpaper_clashprivate")
-#v(1.5em)
-Nevertheless, the `LockActivity` code still sets the new wallpaper (@wallpaper_clashprivate) and displays a screen containing a “Pay” button on which is written “ПРОВЕРИТЬ ОПЛАТУ И РАЗБЛОКИРОВАТЬ” → “Verify payment and unlock”. Every tap on this button triggers a Russian toast, “Оплата не поступила” (“Payment not received”), as coded (@webView_clashprivate and @webView_clashprivatemsg). Finally, it was confirmed that the continuous check on `isInMultiWindowMode()` functions correctly: whenever the user attempts to enter split‐screen, the thread repeatedly calls `Utils.pressHome(this)`, immediately returning the app to full‐screen. In summary, with the C&C server offline the app remains stuck in `LockActivity` (unable to encrypt or decrypt), but all persistence and multi‐window defenses remain active, preventing the user from leaving the fake interface.
-#v(1.5em)
-#columns(2)[
-  #figure(
-  image("img/WebViewclashprivate.jpg", width: 80%),
-  caption: [
-    Main web view
-  ], 
-)
-#label("webView_clashprivate")
-#colbreak()
- #figure(
-  image("img/webView_clashprivatemsg.jpg", width: 80%),
-  caption: [
-    Web view message
-  ], 
+#v(1em)
+Nevertheless, the `LockActivity` code still sets the new wallpaper (@wallpaper_clashprivate) and displays a screen containing a “Pay” button on which is written _“ПРОВЕРИТЬ ОПЛАТУ И РАЗБЛОКИРОВАТЬ” → “Verify payment and unlock”_. Every tap on this button triggers a Russian toast, “Оплата не поступила” (“Payment not received”), as coded (@webView_clashprivatemsg). 
+
+Finally, it was confirmed that the continuous check on `isInMultiWindowMode()` functions correctly: whenever the user attempts to enter split‐screen, the thread repeatedly calls `Utils.pressHome(this)`, immediately returning the app to full‐screen. 
+
+In summary, with the C&C server offline the app remains stuck in `LockActivity` (unable to encrypt or decrypt), but all persistence and multi‐window defenses remain active, preventing the user from leaving the fake interface.
+
+#figure(
+    grid(
+        columns: 2,     // 2 means 2 auto-sized columns
+        gutter: 15mm,    // space between columns
+        image("img/WebViewclashprivate.jpg", width: 100%),
+        image("img/webView_clashprivatemsg.jpg", width: 100%),
+    ),
+    caption: [
+         Main Web View and Web view message
+        ], 
 )
 #label("webView_clashprivatemsg")
-]
 #v(1.5em)
 
