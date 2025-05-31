@@ -280,7 +280,75 @@ Then it sends all the information to a *remote server* (`http://banking1.kakatt.
 
 == Dynamic analysis (`4aec` APK)
 
+The dynamic analysis was conducted on an Android 9.0 emulator (Pixel XL, API 28) in `Android Studio`, with `MobSF` running to capture network traffic, system logs, and screenshots. Upon installation and first launch, the application immediately begins its malicious activity sequence as identified during static analysis. The malware successfully executes the complete chain of activities starting from `BankSplashActivity()` (@bankSplashActivity), which displays for 3 seconds while silently collecting device information including IMSI, phone number, and SIM serial number.
+#linebreak()
+#v(1.5em)
+#columns(2)[
+  #figure(
+  image("img/bankSplashActivities.jpg", width: 80%),
+  caption: [
+    Bank splash activity
+  ], 
+)
+#label("bankSplashActivity")
+#colbreak()
+ #figure(
+  image("img/bankPreActivity.jpg", width: 80%),
+  caption: [
+    Bank pre activity
+  ], 
+)
+#label("bankPreActivity")
+]
+#v(1.5em)
+Immediately after `BankSplashActivity`, the app transitions to what the code refers to as `BankSplashNext`. In practice, however, this second splash screen appears visually identical to the first, so no separate screenshot is captured. After another three‐second delay, the flow proceeds to `BankPreActivity` (@bankPreActivity), that screen displays several buttons, but only the “Next” button is functional.
+At this point the SMS broadcast receiver becomes active with maximum priority, positioning itself to intercept incoming messages before any legitimate applications. However, all attempts to communicate with the command-and-control infrastructure fail as the domain `banking1.kakatt.net:9998` and its associated endpoints are no longer operational.
+#pagebreak()
+#columns(2)[
+  #figure(
+  image("img/bankActivity.jpg", width: 80%),
+  caption: [
+    Bank activity
+  ], 
+)
+#label("bankActivity")
+#colbreak()
+ #figure(
+  image("img/bankNumActivity.jpg", width: 80%),
+  caption: [
+    Bank num activity
+  ], 
+)
+#label("bankNumActivity")
+]
+#v(1.5em)
+Once the user taps “Next”, the application enters `BankActivity`, the first phishing screen. Here, the interface mimics a real bank’s login page, complete with two text fields for user ID and personal identification number (@bankActivity). 
+If the checks pass, the app stores these values into `BankInfo.bankinid` and `BankInfo.jumin` before immediately launching `BankNumActivity` in which the victim is prompted to enter their bank account number and associated password (@bankNumActivity).
+#linebreak()
+#linebreak()
+After the user submits that form, the app advances to `BankScardActivity` (@bankScardActivity), again preserving the three‐second delay pattern to maintain the illusion of legitimate processing time. Whitin tihs activity, the user is asked to input full payment card information, card number, expiration date, CVV, and any security PIN. Once these fields are completed, the code stores them and then immediately transitions into the final phase, BankEndActivity (@bankEndActivity).
+In this phase, the malware bundles all previously collected information into a single HTTP POST request to http://banking1.kakatt.net:9998/send_bank.php.
 
+The dynamic analysis confirmed that while the data exfiltration functionality is currently non-functional due to the offline infrastructure, the malware's core capabilities remain intact. The SMS interception mechanism successfully captures test messages, and the application properly collects all device identifiers and user inputs as designed. The persistence mechanisms also function correctly, with the broadcast receiver maintaining its high-priority position throughout the analysis session.
+#pagebreak()
+#columns(2)[
+  #figure(
+  image("img/bankScardActivity.jpg", width: 80%),
+  caption: [
+    Bank scard activity
+  ], 
+)
+#label("bankScardActivity")
+#colbreak()
+ #figure(
+  image("img/bankEndActivity.jpg", width: 80%),
+  caption: [
+    Bank num activity
+  ], 
+)
+#label("bankEndActivity")
+]
+#v(1.5em)
 
 #pagebreak()
 
@@ -743,7 +811,7 @@ This code creates an intent directed to the Android Home screen (launching the d
 
 == Dynamic Analysis
 
-The dynamic analysis was conducted on an Android 9.0 emulator (Pixel XL, API 28) in `Android Studio`, with `MobSF` running to capture network traffic, system logs, and screenshots. As soon as the APK is installed and launched, its icon automatically disappears. On first run, `MobSF` records requests for storage and contacts permissions (needed for encrypting files and contacts), but every attempt to connect to the C&C server times out: the server is offline and does not return an encryption key. Consequently, the encryption process is halted and the app remains idle, unable to proceed.
+The dynamic analysis was conducted also in this case on an Android 9.0 emulator (Pixel XL, API 28) in `Android Studio`, with `MobSF`. As soon as the APK is installed and launched, its icon automatically disappears. On first run, `MobSF` records requests for storage and contacts permissions (needed for encrypting files and contacts), but every attempt to connect to the C&C server times out: the server is offline and does not return an encryption key. Consequently, the encryption process is halted and the app remains idle, unable to proceed.
 #v(1.5em)
 #figure(
   image("img/walpaper_clashprivate.jpg", width: 40%),
@@ -773,3 +841,4 @@ Nevertheless, the `LockActivity` code still sets the new wallpaper (@wallpaper_c
 #label("webView_clashprivatemsg")
 ]
 #v(1.5em)
+
