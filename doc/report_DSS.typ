@@ -777,7 +777,7 @@ public class AES {
         SecretKeySpec skeySpec = new SecretKeySpec(key, "AES");
         Cipher cipher = Cipher.getInstance("AES");
 ```
-#v(0.5  em)
+#v(0.5em)
 In addition to the encryption and ransom-display logic, LockActivity includes a function that prevents the user from exploiting Android’s multi-window mode to “escape” the malicious screen. In Android versions that support Multi-Window Mode, a background thread continuously checks whether the activity has entered split-screen mode.
 #v(0.5em)
 ```java

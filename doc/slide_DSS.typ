@@ -29,6 +29,7 @@
 
 = Introduction
 
+== Static Analysis
 #slide[
   #v(1em)
   #figure(
@@ -44,7 +45,24 @@ Starting from VirusTotal analysis and integrating it with MobSF we classified ou
 #v(0.3em)
 - *FakeBank* (4 samples)
 - *Locker* (1 sample)
-We performed both *Static* and *Dynamic* Analisys
+The initial classification made by those tools was subsequently verified by analyzing the source code of the APKs decompiled using *JD-GUI*.
+]
+
+== Dynamic Analysis
+#slide[
+  #v(0.5em)
+  #set align(center)
+  #set text(size: 22pt)
+  The dynamic analysis was performed using the *Android Emulator* provided by *Android Studio*. Simulating a Pixel XL device with *Android 9.0* (API level 28), we installed and executed the APKs using the *MobSF Dynamic Analysis* tool in a *Virtual Machine*.  
+  #v(1em)
+  #figure(
+    grid(
+        columns: 2,     // 2 means 2 auto-sized columns
+        gutter: 15mm,    // space between columns
+        image("/img/android_studio_logo.jpeg", width: 60%),
+        image("/img/android-9-pie.png", width: 120%),
+    ),
+)
 ]
 
 = Fakebank Family
