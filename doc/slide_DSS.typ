@@ -44,7 +44,7 @@
 Starting from VirusTotal analysis and integrating it with MobSF we classified our samples as:
 #v(0.3em)
 - *FakeBank* (4 samples)
-- *Locker* (1 sample)
+- *RansomLock* (1 sample)
 The initial classification made by those tools was subsequently verified by analyzing the source code of the APKs decompiled using *JD-GUI*.
 ]
 
@@ -114,3 +114,51 @@ The four analyzed *Malware* samples are *Trojan bankers* designed to mimic legit
   `BankSplashActivity` and `BankEndActivity` sends all the stolen data to a remote server that is not the legitimate one. (`http://banking1.kakatt.net:9998`) 
 ]
         
+
+= RansomLock Family
+
+#slide[
+  #figure(
+    grid(
+        image("/img/calshprivate_icon.jpg", width: 30%),
+    ),
+)
+#v(1em)
+#set align(center)
+The *Malware* sample is a *Locker Ransomware* that imitate a famous strategy game. Actually, it encypt both file contents and contact data like a typical ransomware, while launches a game-themed fake lock screen on every reboot—hiding its icon and blocking any escape until the ransom is paid.
+
+]
+
+== Permissions
+#slide[
+  #figure(
+    grid(
+        columns: 2,     // 2 means 2 auto-sized columns
+        gutter: 5mm,   // space between columns
+        image("/img/Permission_clashprivate.png", width: 85%),
+        grid(
+        columns: 1,     // 1 means 1 auto-sized column
+        rows: 1,     // 2 means 2 auto-sized rows
+        rect(stroke: none)[
+            #set align(left)
+            #set text(size: 20pt)
+            The sample requests dangerous permissions to read and write external storage and contacts in order to encrypt personal data. Using the RECEIVE_BOOT_COMPLETED permission and an exported #strong[BroadcastReceiver], it auto starts at boot.
+        ],
+        ),
+      ),
+  )
+  #figure(
+    image("/img/Manifest_clashprivate.png", width: 90%)
+  )
+]
+== App Flow
+#slide[
+  #v(1em)
+  #figure(
+    image("/img/diagram_clashprivate.drawio.png", width: 90%)
+  )
+  #v(1em)
+  #set text(size: 20pt)
+  #set align(center)
+  `LockActivity` requests a symmetric key from a remote server to encrypt files, and subsequently decrypts them if the payment is made. (`http://timei2260.myjino.ru`) 
+]

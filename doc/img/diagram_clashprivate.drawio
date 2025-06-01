@@ -1,0 +1,65 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (X11; Linux x86_64; rv:139.0) Gecko/20100101 Firefox/139.0" version="27.1.1">
+  <diagram name="Page-1" id="up-rJsbCAJt8GNneFF_9">
+    <mxGraphModel dx="946" dy="577" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="PqdLR431ClCtl6Tt4zcf-1" value="LockActivity" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="410" y="100" width="100" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="PqdLR431ClCtl6Tt4zcf-33" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="PqdLR431ClCtl6Tt4zcf-2" target="PqdLR431ClCtl6Tt4zcf-29" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="270" y="150" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="85" y="120" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="PqdLR431ClCtl6Tt4zcf-34" value="Install app" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="PqdLR431ClCtl6Tt4zcf-33" vertex="1" connectable="0">
+          <mxGeometry x="-0.1511" relative="1" as="geometry">
+            <mxPoint y="2" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="PqdLR431ClCtl6Tt4zcf-2" value="Android User" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" parent="1" vertex="1">
+          <mxGeometry x="65" y="160" width="40" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="PqdLR431ClCtl6Tt4zcf-29" value="MainActivity" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="190" y="90" width="110" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="dicrNFX0rb-Zmy1DUcEH-2" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="PqdLR431ClCtl6Tt4zcf-29" target="PqdLR431ClCtl6Tt4zcf-1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="310" y="370" as="sourcePoint" />
+            <mxPoint x="360" y="320" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="dicrNFX0rb-Zmy1DUcEH-4" value="&lt;div&gt;Set&amp;nbsp;&lt;/div&gt;&lt;div&gt;wallpaper&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="425" y="175" width="70" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="dicrNFX0rb-Zmy1DUcEH-5" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.25;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="PqdLR431ClCtl6Tt4zcf-1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="310" y="370" as="sourcePoint" />
+            <mxPoint x="400" y="180" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="dicrNFX0rb-Zmy1DUcEH-10" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="PqdLR431ClCtl6Tt4zcf-1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="540" y="370" as="sourcePoint" />
+            <mxPoint x="460" y="180" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="dicrNFX0rb-Zmy1DUcEH-11" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.75;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="PqdLR431ClCtl6Tt4zcf-1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="540" y="370" as="sourcePoint" />
+            <mxPoint x="520" y="180" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="dicrNFX0rb-Zmy1DUcEH-12" value="&lt;div&gt;Encrypt files&amp;nbsp;&lt;/div&gt;&lt;div&gt;and contacts&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="510" y="180" width="90" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="dicrNFX0rb-Zmy1DUcEH-13" value="&lt;div&gt;Fake lock&amp;nbsp;&lt;/div&gt;&lt;div&gt;screen&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="330" y="175" width="80" height="40" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
