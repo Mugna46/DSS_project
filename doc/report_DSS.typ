@@ -468,10 +468,7 @@ The `MainActivity` is not the actual entry point of the application. The real ma
 
 = RansomLoc family
 
-*Clash Royale Private* is an Android package that appears as a simple screensaver or game app but is actually a Trojan that quietly steals data. Once installed, it hides its icon and auto‐launches at boot, then reads incoming SMS messages, harvests contacts and call logs, and even accesses files on external storage. 
-#linebreak()
-#linebreak()
-All this information is sent unencrypted to remote servers, making the app a severe threat to user privacy.
+*Clash Royale Private* is an Android package that masquerades as a simple screensaver or game app but is actually a locker ransomware. Once installed, its MainActivity hides the app icon and an OnBoot receiver auto‐launches LockActivity at each reboot—displaying a fake lock screen, encrypting files and contacts, and preventing any escape until the ransom is paid.
 
 == Static analysis
 
