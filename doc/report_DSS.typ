@@ -468,7 +468,7 @@ The `MainActivity` is not the actual entry point of the application. The real ma
 
 = RansomLoc family
 
-*Clash Royale Private* is an Android package that masquerades as a simple screensaver or game app but is actually a locker ransomware. Once installed, its MainActivity hides the app icon and an OnBoot receiver auto‐launches LockActivity at each reboot—displaying a fake lock screen, encrypting files and contacts, and preventing any escape until the ransom is paid.
+*Clash Royale Private* is an Android package that masquerades as a simple screensaver or game app but is actually a locker ransomware. Once installed, its MainActivity hides the app icon and an OnBoot receiver auto‐launches LockActivity at each reboot displaying a fake lock screen, encrypting files and contacts, and preventing any escape until the ransom is paid.
 
 == Static analysis
 
@@ -498,7 +498,7 @@ As we can see from the figure @community-score-clashprivate, the APK is detected
 The malware exploits a series of sensitive Android permissions to ensure its operation and collect the user’s personal information, it requests four dangerous permissions (red triangles in @permission_clashprivate).
 #linebreak()
 #linebreak()
-The sample requests full internet access, which it uses to exfiltrate stolen information to remote servers. By using the `RECEIVE_BOOT_COMPLETED` permission, it ensures it launches automatically when the device starts, maintaining persistence without user interaction. It also requests permissions to read and write to external storage and to read and write used to harvest names and numbers from the user’s address book, potentially hiding identity theft or malware propagation. Finally, while seemingly harmless, the `SET_WALLPAPER` permission may be exploited to distract the user or conceal malicious activity happening in the background.
+The sample requests full internet access, which it uses to request the encryption and decryption key from remote servers. By using the `RECEIVE_BOOT_COMPLETED` permission, it ensures it launches automatically when the device starts, maintaining persistence without user interaction. It also requests permissions to read and write to external storage and to read and write used to harvest names and numbers from the user’s address book, potentially hiding identity theft or malware propagation. Finally, while seemingly harmless, the `SET_WALLPAPER` permission may be exploited to distract the user or conceal malicious activity happening in the background.
 
 === Manifest Analysis and Receivers
 #v(0.5em)
@@ -639,7 +639,7 @@ if (!new Memory(this).readMemoryKey("worked").equalsIgnoreCase("1")) {
 new Memory(this).writeMemory("worked", "1");
 ```
 #v(0.2em)
-Successivamente il flag viene imopstato a "1".
+Subsequently, the flag is set to '1'.
 #linebreak()
 #linebreak()
 At this point, once the necessary permissions are granted, *LockActivity* sets a new wallpaper behind the fake lock screen.
@@ -831,9 +831,7 @@ In summary, with the C&C server offline the app remains stuck in `LockActivity` 
         image("img/webView_clashprivatemsg.jpg", width: 100%),
     ),
     caption: [
-         Main Web View and Web view message
+         Main Web View and Web View message
         ], 
 )
 #label("webView_clashprivatemsg")
-#v(1.5em)
-
